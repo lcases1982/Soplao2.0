@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soplao Express</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        nav {
+            background: linear-gradient(135deg, #005999, #2a5d84, #33a0cc, #2a5d84, #005999);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1rem;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        header {
+            background: linear-gradient(135deg, #005999, #2a5d84, #33a0cc, #2a5d84, #005999);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        header img {
+            height: 50px;
+            margin-right: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 15px;
+            gap: 15px;
+        }
+        .container, .result-container {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            background: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            margin-top: 0;
+        }
+        .container h2, .result-container h2 {
+            background-color: #004e92;
+            color: white;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.2rem;
+        }
+        label, input, button, textarea {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            font-size: 1rem;
+            font-family: Arial, sans-serif;
+        }
+        input, textarea {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        button {
+            background: linear-gradient(135deg, #004e92, #005999);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #005999, #004e92);
+        }
+        .box-entry {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .remove-box {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .remove-box:hover {
+            background-color: #c0392b;
+        }
+        .result-container .result-item {
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 5px;
+        }
+        .result-container .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-container .highlight {
+            font-weight: bold;
+        }
+        .result-container .total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #004d40;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="contacto.html">Contacto</a>
+    </nav>
+    <header>
+        <img src="Soplao-express.jpg" alt="Logo de Soplao Express">
+        <h1>Soplao Express</h1>
+    </header>
+    <div class="main-content">
+        <div class="container">
+            <h2>Calculadora</h2>
+            <label for="value-of-goods">Valor de la Mercancía (USD)</label>
+            <input type="number" id="value-of-goods" min="0" step="0.01" placeholder="Ingrese el valor de la mercancía" required>
+            <div id="box-container">
+                <div class="box-entry">
+                    <label for="quantity-1">Cantidad de cajas</label>
+                    <input type="number" id="quantity-1" min="1" step="1" value="1" required>
+
+                    <label for="length-1">Largo (cm)</label>
+                    <input type="number" id="length-1" min="0" step="0.01" required>
+                    
+                    <label for="width-1">Ancho (cm)</label>
+                    <input type="number" id="width-1" min="0" step="0.01" required>
+                    
+                    <label for="height-1">Alto (cm)</label>
+                    <input type="number" id="height-1" min="0" step="0.01" required>
+
+                    <label for="weight-1">Peso (kg)</label>
+                    <input type="number" id="weight-1" min="0" step="0.01" required>
+                    <button type="button" class="remove-box" onclick="removeBox(this)">Eliminar Caja</button>
+                </div>
+            </div>
+            <button type="button" onclick="addBox()">Añadir otra caja</button>
+            <button type="button" onclick="calculateCharge()">Calcular Costo Total</button>
+        </div>
+        <div class="result-container" style="display:none;">
+            <h2>Desglose de Costos</h2>
+            <div id="result-details">
+                <!-- Result content will be dynamically added here -->
+            </div>
+        </div>
+        <div class="container" id="customer-info" style="display:none;">
+            <h2>Datos del Cliente</h2>
+            <label for="customer-delivery-address">Dirección de Entrega</label>
+            <textarea id="customer-delivery-address" placeholder="Ingrese la dirección de entrega"></textarea>
+
+            <label for="customer-city">Ciudad</label>
+            <input type="text" id="customer-city" placeholder="Ingrese la ciudad">
+            
+            <label for="customer-contact-person">Persona de Contacto</label>
+            <input type="text" id="customer-contact-person" placeholder="Ingrese la persona de contacto">
+            
+            <label for="customer-contact-rut">RUT de la Persona de Contacto</label>
+            <input type="text" id="customer-contact-rut" placeholder="Ingrese el RUT de la persona de contacto (9 dígitos sin guión)" required pattern="\\d{9}">
+            
+            <label for="customer-email">Correo Electrónico</label>
+            <input type="email" id="customer-email" placeholder="Ingrese su correo electrónico">
+            
+            <label for="customer-phone">Número de Contacto</label>
+            <input type="tel" id="customer-phone" placeholder="Ingrese su número de contacto">
+            
+            <button onclick="generatePDF()">Generar PDF</button>
+        </div>
+    </div>
+
+    <script>
+        let boxCount = 1;
+
+        function addBox() {
+            boxCount++;
+            const boxContainer = document.getElementById('box-container');
+            const newBox = document.createElement('div');
+            newBox.className = 'box-entry';
+            newBox.innerHTML = `
+                <label for="quantity-${boxCount}">Cantidad de cajas</label>
+                <input type="number" id="quantity-${boxCount}" min="1" step="1" value="1" required>
+
+                <label for="length-${boxCount}">Largo (cm)</label>
+                <input type="number" id="length-${boxCount}" min="0" step="0.01" required>
+                
+                <label for="width-${boxCount}">Ancho (cm)</label>
+                <input type="number" id="width-${boxCount}" min="0" step="0.01" required>
+                
+                <label for="height-${boxCount}">Alto (cm)</label>
+                <input type="number" id="height-${boxCount}" min="0" step="0.01" required>
+
+                <label for="weight-${boxCount}">Peso (kg)</label>
+                <input type="number" id="weight-${boxCount}" min="0" step="0.01" required>
+                <button type="button" class="remove-box" onclick="removeBox(this)">Eliminar Caja</button>
+            `;
+            boxContainer.appendChild(newBox);
+        }
+
+        function removeBox(button) {
+            button.parentElement.remove();
+            boxCount--;
+        }
+
+        function calculateCharge() {
+            const valueOfGoodsInput = document.getElementById('value-of-goods');
+            const valueOfGoods = parseFloat(valueOfGoodsInput.value);
+
+            if (isNaN(valueOfGoods) || valueOfGoods < 0) {
+                alert("Por favor, ingrese un valor válido para la mercancía.");
+                return;
+            }
+
+            const customsAgentFee = 25; // USD
+            const finalDeliveryFee = 10; // USD
+            let totalChargeableWeight = 0;
+            let totalActualWeight = 0;
+            let totalChargeableCost = 0;
+            let totalBoxes = 0;
+
+            const boxContainer = document.getElementById('box-container');
+            const boxes = boxContainer.getElementsByClassName('box-entry');
+
+            let boxDetails = '';
+
+            for (let i = 0; i < boxes.length; i++) {
+                const quantity = parseInt(boxes[i].querySelector(`#quantity-${i + 1}`).value);
+                const length = parseFloat(boxes[i].querySelector(`#length-${i + 1}`).value);
+                const width = parseFloat(boxes[i].querySelector(`#width-${i + 1}`).value);
+                const height = parseFloat(boxes[i].querySelector(`#height-${i + 1}`).value);
+                const weight = parseFloat(boxes[i].querySelector(`#weight-${i + 1}`).value);
+
+                if (isNaN(quantity) || quantity <= 0 || isNaN(length) || isNaN(width) || isNaN(height) || isNaN(weight) || length <= 0 || width <= 0 || height <= 0 || weight <= 0) {
+                    alert(`Por favor, ingrese números válidos y positivos para la caja ${i + 1}.`);
+                    return;
+                }
+
+                totalBoxes += quantity;
+                const chargeableWeight = Math.max((length * width * height) / 6000, weight);
+                totalChargeableWeight += chargeableWeight * quantity;
+                totalActualWeight += weight * quantity;
+
+                boxDetails += `<div class="result-item">Caja ${i + 1}: ${quantity} unidades, Dimensiones: ${length}x${width}x${height} cm, Peso: ${weight} kg</div>`;
+            }
+
+            let ratePerKg = 7;
+            if (totalChargeableWeight > 300 && totalChargeableWeight <= 500) {
+                ratePerKg = 6.5;
+            } else if (totalChargeableWeight > 500 && totalChargeableWeight <= 1000) {
+                ratePerKg = 6;
+            } else if (totalChargeableWeight > 1000) {
+                ratePerKg = 5.5;
+            }
+
+            totalChargeableCost = totalChargeableWeight * ratePerKg;
+            const taxOnGoods = valueOfGoods * 0.29;
+            const totalCost = totalChargeableCost + customsAgentFee + finalDeliveryFee + taxOnGoods;
+
+            const resultContainer = document.querySelector('.result-container');
+            resultContainer.innerHTML = `
+                <h2>Desglose de Costos</h2>
+                <div id="result-details">
+                    <div class="result-item highlight">Peso Facturable: ${totalChargeableWeight.toFixed(2)} kg</div>
+                    <div class="result-item">Flete Aereo: $${totalChargeableCost.toFixed(2)}</div>
+                    <div class="result-item">Monto del Impuesto: $${taxOnGoods.toFixed(2)}</div>
+                    <div class="result-item">Gasto de Agente de Aduana: $${customsAgentFee.toFixed(2)}</div>
+                    <div class="result-item">Gasto de Entrega Local: $${finalDeliveryFee.toFixed(2)}</div>
+                    <div class="result-item total">Costo Total: $${totalCost.toFixed(2)}</div>
+                    ${boxDetails}
+                </div>
+            `;
+            resultContainer.style.display = 'block';
+            document.getElementById('customer-info').style.display = 'block';
+        }
+
+        function generatePDF() {
+            const customerDeliveryAddress = document.getElementById('customer-delivery-address').value || 'N/A';
+            const customerCity = document.getElementById('customer-city').value || 'N/A';
+            const customerContactPerson = document.getElementById('customer-contact-person').value || 'N/A';
+            const customerContactRut = document.getElementById('customer-contact-rut').value.trim();
+            const customerEmail = document.getElementById('customer-email').value || 'N/A';
+            const customerPhone = document.getElementById('customer-phone').value || 'N/A';
+            const resultContainer = document.querySelector('.result-container');
+            const resultHtml = resultContainer.innerHTML;
+
+            // Validación del RUT
+            const rutPattern = /^\d{9}$/;
+            if (!rutPattern.test(customerContactRut)) {
+                alert("El RUT de la persona de contacto es obligatorio y debe tener exactamente 9 dígitos.");
+                return;
+            }
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Resumen de Costos</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 20px;
+                        }
+                        h1, p {
+                            text-align: center;
+                        }
+                        .highlight, .total {
+                            font-weight: bold;
+                        }
+                        .header {
+                            background: linear-gradient(135deg, #005999, #2a5d84);
+                            color: white;
+                            padding: 10px;
+                            text-align: center;
+                            border-radius: 8px;
+                        }
+                        .details {
+                            margin: 20px 0;
+                            border: 1px solid #ccc;
+                            padding: 15px;
+                            border-radius: 8px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <img src="Soplao-express.jpg" alt="Logo de Soplao Express" style="height: 100px;">
+                        <h1>Resumen de Costos - Soplao Express</h1>
+                    </div>
+                    <p><strong>Dirección de Entrega:</strong> ${customerDeliveryAddress}</p>
+                    <p><strong>Ciudad:</strong> ${customerCity}</p>
+                    <p><strong>Persona de Contacto:</strong> ${customerContactPerson}</p>
+                    <p><strong>RUT de la Persona de Contacto:</strong> ${customerContactRut}</p>
+                    <p><strong>Correo Electrónico:</strong> ${customerEmail}</p>
+                    <p><strong>Número de Contacto:</strong> ${customerPhone}</p>
+                    <div class="details">
+                        ${resultHtml}
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+
+            // Abre WhatsApp para enviar un mensaje
+            const whatsappNumber = "+56962289732"; // Reemplaza con el número de Soplao Express (e.g., "56912345678")
+            const whatsappMessage = encodeURIComponent("El PDF se ha generado correctamente. Por favor, revisa el archivo.");
+            window.open(`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`, '_blank');
+        }
+    </script>
+</body>
+</html>
